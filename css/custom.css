@@ -1,0 +1,247 @@
+/* ==========================================================================
+   GestikFit - Barrierefreie Styles & Gesten-Training UI
+   Optimiert für neurologische Reha (Schlaganfall, Hemiparese, Feinmotorik)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --font-base-size: 20px;
+  --touch-target-min: 64px;
+  --brand-teal: #0d9488;
+  --brand-teal-dark: #0f766e;
+  --brand-teal-light: #f0fdfa;
+  --accent-amber: #f59e0b;
+  --accent-amber-light: #fffbeb;
+  --reha-blue: #2563eb;
+  --emergency-red: #dc2626;
+  --success-green: #10b981;
+}
+
+/* ==========================================================================
+   GRUNDSCHRIFT & DYNAMISCHE SCHRIFTGRÖSSEN (A / A+ / A++)
+   ========================================================================== */
+html {
+  font-size: var(--font-base-size);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+html.font-size-normal {
+  --font-base-size: 20px;
+}
+
+html.font-size-large {
+  --font-base-size: 24px;
+}
+
+html.font-size-xlarge {
+  --font-base-size: 28px;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  touch-action: manipulation;
+}
+
+/* Große Touch-Targets: mindestens 64px x 64px für einfache Bedienung mit einer Hand */
+.btn-touch {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 1.25rem;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn-touch:active {
+  transform: scale(0.97);
+}
+
+.btn-touch:focus-visible {
+  outline: 4px solid var(--accent-amber);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   HOHER KONTRAST MODUS (GELB AUF SCHWARZ)
+   ========================================================================== */
+html.high-contrast,
+html.high-contrast body {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+}
+
+html.high-contrast header,
+html.high-contrast footer,
+html.high-contrast .tab-content,
+html.high-contrast .bg-white,
+html.high-contrast .bg-slate-50,
+html.high-contrast .bg-slate-100,
+html.high-contrast .bg-teal-50,
+html.high-contrast .bg-teal-700,
+html.high-contrast .bg-gradient-to-br {
+  background: #000000 !important;
+  color: #ffff00 !important;
+  border-color: #ffff00 !important;
+}
+
+html.high-contrast h1,
+html.high-contrast h2,
+html.high-contrast h3,
+html.high-contrast h4,
+html.high-contrast p,
+html.high-contrast span,
+html.high-contrast div,
+html.high-contrast strong {
+  color: #ffff00 !important;
+}
+
+html.high-contrast .btn-touch,
+html.high-contrast button {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 3px solid #ffff00 !important;
+}
+
+html.high-contrast .btn-touch:hover,
+html.high-contrast button:hover {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+}
+
+html.high-contrast .btn-touch.active,
+html.high-contrast .nav-tab-btn.active {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+  border: 3px solid #ffff00 !important;
+}
+
+html.high-contrast .emergency-box {
+  background-color: #000000 !important;
+  border: 4px solid #ff3333 !important;
+  color: #ff3333 !important;
+}
+
+html.high-contrast .emergency-box * {
+  color: #ff3333 !important;
+}
+
+/* ==========================================================================
+   KAMERA & CANVAS GESTEN-DETEKTOR
+   ========================================================================== */
+.camera-container {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  aspect-ratio: 4/3;
+  margin: 0 auto;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background: #0f172a;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+/* Spiegelung der Webcam für intuitives Feedback (wie im Spiegel) */
+.camera-mirror {
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+}
+
+.video-stream,
+.detection-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detection-canvas {
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Kreisförmiger Haltezeit-Fortschritt */
+.hold-circle-svg {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.hold-circle-bg {
+  stroke: rgba(255, 255, 255, 0.25);
+}
+
+.hold-circle-bar {
+  stroke: #10b981;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.08s linear, stroke 0.2s ease;
+}
+
+/* Geste fast erkannt / aktiv */
+.hold-circle-bar.searching {
+  stroke: #38bdf8;
+}
+.hold-circle-bar.holding {
+  stroke: #10b981;
+  filter: drop-shadow(0 0 10px #10b981);
+}
+
+/* Konfetti Canvas */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Animationen */
+@keyframes pulseRing {
+  0% { transform: scale(0.96); opacity: 0.8; }
+  50% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(0.96); opacity: 0.8; }
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes bounceCelebration {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.05); }
+}
+
+.animate-celebrate {
+  animation: bounceCelebration 0.6s ease-in-out infinite alternate;
+}
+
+/* Druckausgabe */
+@media print {
+  header, footer, .no-print, button, nav {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 14pt !important;
+  }
+  .tab-content {
+    display: block !important;
+  }
+}
